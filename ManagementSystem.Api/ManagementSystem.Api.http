@@ -1,0 +1,6 @@
+@ManagementSystem.Api_HostAddress = http://localhost:5244
+
+GET {{ManagementSystem.Api_HostAddress}}/api/Students
+Accept: application/json
+
+###
