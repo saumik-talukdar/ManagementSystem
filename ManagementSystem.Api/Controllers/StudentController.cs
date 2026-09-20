@@ -1,3 +1,4 @@
+using ManagementSystem.Api.DTOs.Students;
 using ManagementSystem.Api.Models;
 using ManagementSystem.Api.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -16,15 +17,24 @@ public class StudentController : ControllerBase
     }
 
     [HttpGet]
-    public ActionResult<List<Student>> GetAll()
+    public ActionResult<List<StudentResponse>> GetAll()
     {
         var students = _studentService.GetAll();
 
-        return Ok(students);
+        var response = students.Select(student => new StudentResponse
+        {
+            Id = student.Id,
+            Name = student.Name,
+            Email = student.Email,
+            Age = student.Age,
+            Department = student.Department
+        }).ToList();
+
+        return Ok(response);
     }
 
     [HttpGet("{id:int}")]
-    public ActionResult<Student> GetById(int id)
+    public ActionResult<StudentResponse> GetById(int id)
     {
         var student = _studentService.GetById(id);
 
@@ -33,26 +43,61 @@ public class StudentController : ControllerBase
             return NotFound();
         }
 
-        return Ok(student);
+        var response = new StudentResponse
+        {
+            Id = student.Id,
+            Name = student.Name,
+            Email = student.Email,
+            Age = student.Age,
+            Department = student.Department
+        };
+
+        return Ok(response);
     }
 
     [HttpPost]
-    public ActionResult<Student> Create(Student student)
+    public ActionResult<StudentResponse> Create(
+        CreateStudentRequest request)
     {
+        var student = new Student
+        {
+            Name = request.Name,
+            Email = request.Email,
+            Age = request.Age,
+            Department = request.Department
+        };
+
         var createdStudent = _studentService.Create(student);
+
+        var response = new StudentResponse
+        {
+            Id = createdStudent.Id,
+            Name = createdStudent.Name,
+            Email = createdStudent.Email,
+            Age = createdStudent.Age,
+            Department = createdStudent.Department
+        };
 
         return CreatedAtAction(
             nameof(GetById),
-            new { id = createdStudent.Id },
-            createdStudent
+            new { id = response.Id },
+            response
         );
     }
 
     [HttpPut("{id:int}")]
-    public ActionResult<Student> Update(
+    public ActionResult<StudentResponse> Update(
         int id,
-        Student student)
+        UpdateStudentRequest request)
     {
+        var student = new Student
+        {
+            Name = request.Name,
+            Email = request.Email,
+            Age = request.Age,
+            Department = request.Department
+        };
+
         var updatedStudent = _studentService.Update(id, student);
 
         if (updatedStudent is null)
@@ -60,7 +105,16 @@ public class StudentController : ControllerBase
             return NotFound();
         }
 
-        return Ok(updatedStudent);
+        var response = new StudentResponse
+        {
+            Id = updatedStudent.Id,
+            Name = updatedStudent.Name,
+            Email = updatedStudent.Email,
+            Age = updatedStudent.Age,
+            Department = updatedStudent.Department
+        };
+
+        return Ok(response);
     }
 
     [HttpDelete("{id:int}")]
