@@ -1,4 +1,5 @@
 using ManagementSystem.Api.Models;
+using ManagementSystem.Api.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ManagementSystem.Api.Controllers;
@@ -7,42 +8,71 @@ namespace ManagementSystem.Api.Controllers;
 [Route("api/[controller]")]
 public class StudentController : ControllerBase
 {
-    private readonly List<Student> _students =
-    [
-        new()
-        {
-            Id = 1,
-            Name = "Saumik",
-            Email = "saumik@example.com",
-            Age = 22,
-            Department = "CSE"
-        },
-        new()
-        {
-            Id = 2,
-            Name = "Rahim",
-            Email = "rahim@example.com",
-            Age = 23,
-            Department = "CSE"
-        }
-    ];
+    private readonly StudentService _studentService;
+
+    public StudentController(StudentService studentService)
+    {
+        _studentService = studentService;
+    }
 
     [HttpGet]
-    public ActionResult<List<Student>> GetStudents()
+    public ActionResult<List<Student>> GetAll()
     {
-        return _students;
+        var students = _studentService.GetAll();
+
+        return Ok(students);
     }
 
     [HttpGet("{id:int}")]
-    public ActionResult<Student> GetStudent(int id)
+    public ActionResult<Student> GetById(int id)
     {
-        var student = _students.FirstOrDefault(s => s.Id == id);
+        var student = _studentService.GetById(id);
 
         if (student is null)
         {
             return NotFound();
         }
 
-        return student;
+        return Ok(student);
+    }
+
+    [HttpPost]
+    public ActionResult<Student> Create(Student student)
+    {
+        var createdStudent = _studentService.Create(student);
+
+        return CreatedAtAction(
+            nameof(GetById),
+            new { id = createdStudent.Id },
+            createdStudent
+        );
+    }
+
+    [HttpPut("{id:int}")]
+    public ActionResult<Student> Update(
+        int id,
+        Student student)
+    {
+        var updatedStudent = _studentService.Update(id, student);
+
+        if (updatedStudent is null)
+        {
+            return NotFound();
+        }
+
+        return Ok(updatedStudent);
+    }
+
+    [HttpDelete("{id:int}")]
+    public IActionResult Delete(int id)
+    {
+        var deleted = _studentService.Delete(id);
+
+        if (!deleted)
+        {
+            return NotFound();
+        }
+
+        return NoContent();
     }
 }
