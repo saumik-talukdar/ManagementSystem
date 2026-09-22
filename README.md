@@ -816,7 +816,7 @@ The goal is to understand **why** each layer exists rather than introducing arch
 * [x] Data annotation validation
 * [x] `[ApiController]`
 * [x] Basic LINQ
-* [ ] Advanced LINQ
+* [x] Advanced LINQ
 * [ ] Entity Framework Core
 * [ ] PostgreSQL
 * [ ] EF Core migrations
