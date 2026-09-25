@@ -1,80 +1,41 @@
 using ManagementSystem.Api.Models;
+using ManagementSystem.Api.Repositories;
 
 namespace ManagementSystem.Api.Services;
 
 public class StudentService
 {
-    private readonly List<Student> _students =
-    [
-        new()
-        {
-            Id = 1,
-            Name = "Saumik",
-            Email = "saumik@example.com",
-            Age = 22,
-            Department = "CSE"
-        },
-        new()
-        {
-            Id = 2,
-            Name = "Rahim",
-            Email = "rahim@example.com",
-            Age = 23,
-            Department = "CSE"
-        }
-    ];
+    private readonly IStudentRepository _studentRepository;
 
-    public List<Student> GetAll()
+    public StudentService(IStudentRepository studentRepository)
     {
-        return _students;
+        _studentRepository = studentRepository;
     }
 
-    public Student? GetById(int id)
+    public async Task<List<Student>> GetAllAsync()
     {
-        return _students.FirstOrDefault(s => s.Id == id);
+        return await _studentRepository.GetAllAsync();
     }
 
-    public Student Create(Student student)
+    public async Task<Student?> GetByIdAsync(int id)
     {
-        var nextId = _students.Count == 0
-            ? 1
-            : _students.Max(s => s.Id) + 1;
-
-        student.Id = nextId;
-
-        _students.Add(student);
-
-        return student;
+        return await _studentRepository.GetByIdAsync(id);
     }
 
-    public Student? Update(int id, Student updatedStudent)
+    public async Task<Student> CreateAsync(Student student)
     {
-        var existingStudent = _students.FirstOrDefault(s => s.Id == id);
-
-        if (existingStudent is null)
-        {
-            return null;
-        }
-
-        existingStudent.Name = updatedStudent.Name;
-        existingStudent.Email = updatedStudent.Email;
-        existingStudent.Age = updatedStudent.Age;
-        existingStudent.Department = updatedStudent.Department;
-
-        return existingStudent;
+        return await _studentRepository.AddAsync(student);
     }
 
-    public bool Delete(int id)
+    public async Task<Student?> UpdateAsync(
+        int id,
+        Student student)
     {
-        var student = _students.FirstOrDefault(s => s.Id == id);
+        return await _studentRepository.UpdateAsync(id, student);
+    }
 
-        if (student is null)
-        {
-            return false;
-        }
-
-        _students.Remove(student);
-
-        return true;
+    public async Task<bool> DeleteAsync(int id)
+    {
+        return await _studentRepository.DeleteAsync(id);
     }
 }

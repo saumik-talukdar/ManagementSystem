@@ -1,3 +1,4 @@
+
 using ManagementSystem.Api.DTOs.Students;
 using ManagementSystem.Api.Models;
 using ManagementSystem.Api.Services;
@@ -17,9 +18,9 @@ public class StudentController : ControllerBase
     }
 
     [HttpGet]
-    public ActionResult<List<StudentResponse>> GetAll()
+    public async Task<ActionResult<List<StudentResponse>>> GetAll()
     {
-        var students = _studentService.GetAll();
+        var students = await _studentService.GetAllAsync();
 
         var response = students.Select(student => new StudentResponse
         {
@@ -34,9 +35,9 @@ public class StudentController : ControllerBase
     }
 
     [HttpGet("{id:int}")]
-    public ActionResult<StudentResponse> GetById(int id)
+    public async Task<ActionResult<StudentResponse>> GetById(int id)
     {
-        var student = _studentService.GetById(id);
+        var student = await _studentService.GetByIdAsync(id);
 
         if (student is null)
         {
@@ -56,7 +57,7 @@ public class StudentController : ControllerBase
     }
 
     [HttpPost]
-    public ActionResult<StudentResponse> Create(
+    public async Task<ActionResult<StudentResponse>> Create(
         CreateStudentRequest request)
     {
         var student = new Student
@@ -67,7 +68,8 @@ public class StudentController : ControllerBase
             Department = request.Department
         };
 
-        var createdStudent = _studentService.Create(student);
+        var createdStudent =
+            await _studentService.CreateAsync(student);
 
         var response = new StudentResponse
         {
@@ -86,7 +88,7 @@ public class StudentController : ControllerBase
     }
 
     [HttpPut("{id:int}")]
-    public ActionResult<StudentResponse> Update(
+    public async Task<ActionResult<StudentResponse>> Update(
         int id,
         UpdateStudentRequest request)
     {
@@ -98,7 +100,8 @@ public class StudentController : ControllerBase
             Department = request.Department
         };
 
-        var updatedStudent = _studentService.Update(id, student);
+        var updatedStudent =
+            await _studentService.UpdateAsync(id, student);
 
         if (updatedStudent is null)
         {
@@ -118,9 +121,9 @@ public class StudentController : ControllerBase
     }
 
     [HttpDelete("{id:int}")]
-    public IActionResult Delete(int id)
+    public async Task<IActionResult> Delete(int id)
     {
-        var deleted = _studentService.Delete(id);
+        var deleted = await _studentService.DeleteAsync(id);
 
         if (!deleted)
         {
@@ -130,3 +133,4 @@ public class StudentController : ControllerBase
         return NoContent();
     }
 }
+
